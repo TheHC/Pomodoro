@@ -1,35 +1,39 @@
 # Only needed for access to command line arguments
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout,QPushButton, QMainWindow, QLineEdit,QTextEdit
-
+from PyQt6.QtGui import QIcon
+from PyQt6 import uic
 
 #sublass QMainWindows to customize app main windows
-class MMyApp(QWidget):
+class MyApp(QWidget):
     def __init__(self):
         super().__init__()
+        uic.loadUi('gui.ui', self)
 
-        self.setWindowTitle("Pomodoro")
-        
-        self.inputtest=
-        button = QPushButton("start")
-        button.setCheckable(True)
-        button.clicked.connect(self.the_button_was_clicked)
-        button.clicked.connect(self.the_button_was_toggled)
-        layout = QVBoxLayout()
-        layout.addWidget(button)
+        # self.setWindowTitle("Pomodoro")
+        # self.setWindowIcon(QIcon('icon.png'))
+        # self.resize(400, 300)
+        #
+        # layout= QVBoxLayout()
+        # self.setLayout(layout)
+        #
+        # self.inputField = QLineEdit()
+        # button = QPushButton('&Say Hello', clicked=self.say_hello)
+        # self.output= QTextEdit()
+        #
+        # layout.addWidget(self.inputField)
+        # layout.addWidget(button)
+        # layout.addWidget(self.output)
 
-        #Set the central widget of the windows
-        self.setCentralWidget(button)
-    def the_button_was_clicked(self):
-        print("clicked")
-    def the_button_was_toggled(self, checked):
-        print("checked?",checked)
+    def say_hello(self):
+        inputText=self.inputField.text()
+        self.output.setText('Hello {}'.format(inputText))
 
 # Pass in sys.argv to allow command line arguments
 app = QApplication(sys.argv)
 
 # Create a Qt widget, which will be our window.
-window = MainWindow()
+window = MyApp()
 window.show()
 
 # Start the event loop.
