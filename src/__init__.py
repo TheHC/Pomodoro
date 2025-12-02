@@ -11,8 +11,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 logger.info('Starting program')
 
-variable=0
-state_select = "Focus"
+
+
 class Worker(QRunnable):
     """Worker thread"""
     def __init__(self, time_value):
