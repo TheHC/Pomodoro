@@ -3,8 +3,8 @@ import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout,QPushButton, QMainWindow, QLineEdit,QTextEdit
 from PyQt6.QtGui import QIcon
 from PyQt6 import uic
-from PyQt6.QtCore import QRunnable, QThreadPool, QTimer, pyqtSlot
-from PySide6.QtCore import  Signal, QObject
+from PyQt6.QtCore import QRunnable, QThreadPool, QTimer, pyqtSlot, QObject, pyqtSignal
+# from PySide6.QtCore import  Signal, QObject
 import time
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -15,9 +15,9 @@ variable=0
 state_select = "Focus"
 class Worker(QRunnable):
     """Worker thread"""
-    def __init__(self, time):
+    def __init__(self, time_value):
         super().__init__()
-        self.time = time
+        self.time_value = time_value
         self.signals = WorkerSignals()
 
 
@@ -25,7 +25,7 @@ class Worker(QRunnable):
     def run(self):
         # print("Thread start")
         logger.info('Starting worker thread')
-        time.sleep(self.time)
+        time.sleep(self.time_value)
         # print(self.time)
         # print("Thread end")
         logger.info('Ended worker thread')
@@ -33,8 +33,8 @@ class Worker(QRunnable):
 
 
 class WorkerSignals(QObject):
-    finished=Signal()
-    progress=Signal(int)
+    finished=pyqtSignal()
+    # progress=Signal(int)
 
 
 
@@ -50,23 +50,10 @@ class MyApp(QWidget):
 
         self.state=1
         self.focus_label.setStyleSheet("background-color: green")
-        # self.setWindowTitle("Pomodoro")
-        # self.setWindowIcon(QIcon('icon.png'))
-        # self.resize(400, 300)
-        #
-        # layout= QVBoxLayout()
-        # self.setLayout(layout)
-        #
-        # self.inputField = QLineEdit()
-        # button = QPushButton('&Say Hello', clicked=self.say_hello)
-        # self.output= QTextEdit()
-        #
-        # layout.addWidget(self.inputField)
-        # layout.addWidget(button)
-        # layout.addWidget(self.output)
+
 
     def state_machine(self):
-
+        logger.info("starting state machine")
         if self.step=="Focus":
             self.short_label.setStyleSheet("background-color: grey")
             self.focus_label.setStyleSheet("background-color: blue")
@@ -78,6 +65,7 @@ class MyApp(QWidget):
         worker.signals.finished.connect(self.actual_state)
         self.threadpool.start(worker)
     def actual_state(self):
+        logger.info("starting actual state")
         if self.step == "Focus":
             self.step="Short"
             self.short_label.setStyleSheet("background-color: green")
@@ -86,6 +74,8 @@ class MyApp(QWidget):
             self.step="Focus"
             self.short_label.setStyleSheet("background-color: grey")
             self.focus_label.setStyleSheet("background-color: green")
+
+
 
 # Pass in sys.argv to allow command line arguments
 app = QApplication(sys.argv)
