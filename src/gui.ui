@@ -49,7 +49,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QProgressBar" name="progressBar">
+  <widget class="QProgressBar" name="Bar">
    <property name="geometry">
     <rect>
      <x>60</x>

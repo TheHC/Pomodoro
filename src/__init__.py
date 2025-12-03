@@ -25,16 +25,23 @@ class Worker(QRunnable):
     def run(self):
         # print("Thread start")
         logger.info('Starting worker thread')
-        time.sleep(self.time_value)
+        bar_progress_buff=0
+        for i in range(self.time_value):
+                time.sleep(1)
+                # self.signals.progress.emit(int(bar_progress_buff / self.time_value))
+                self.signals.progress.emit(i+1)
+                bar_progress_buff=bar_progress_buff+1
+
         # print(self.time)
         # print("Thread end")
         logger.info('Ended worker thread')
         self.signals.finished.emit()
 
 
+
 class WorkerSignals(QObject):
     finished=pyqtSignal()
-    # progress=Signal(int)
+    progress=pyqtSignal(int)
 
 
 
@@ -48,21 +55,28 @@ class MyApp(QWidget):
 
         self.threadpool=QThreadPool()
 
+        self.Bar.setMinimum(0)
+        self.Bar.setValue(0)
+
         self.state=1
         self.focus_label.setStyleSheet("background-color: green")
 
 
     def state_machine(self):
         logger.info("starting state machine")
+        sleep_time=0
         if self.step=="Focus":
             self.short_label.setStyleSheet("background-color: grey")
             self.focus_label.setStyleSheet("background-color: blue")
-            worker=Worker(10)
+            sleep_time=60
         elif self.step=="Short":
             self.short_label.setStyleSheet("background-color: blue")
             self.focus_label.setStyleSheet("background-color: grey")
-            worker=Worker(2)
+            sleep_time=5
+        worker=Worker(sleep_time)
         worker.signals.finished.connect(self.actual_state)
+        worker.signals.progress.connect(self.progress_bar)
+        self.Bar.setMaximum(sleep_time)
         self.threadpool.start(worker)
     def actual_state(self):
         logger.info("starting actual state")
@@ -74,7 +88,8 @@ class MyApp(QWidget):
             self.step="Focus"
             self.short_label.setStyleSheet("background-color: grey")
             self.focus_label.setStyleSheet("background-color: green")
-
+    def progress_bar(self, value):
+        self.Bar.setValue(value)
 
 
 # Pass in sys.argv to allow command line arguments
